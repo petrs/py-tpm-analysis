@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TPM Capabilities dataset</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="tpm-data">
+        <div class="tpm-list">
+            <h1>Legend</h1>
+            <table class="legend">
+                <tr class="gray bold">
+                    <td>Symbol</td>
+                    <td>Meaning</td>
+                </tr>
+                <tr>
+                    <td class="supported">Yes</td>
+                    <td>This capability is supported by tested TPM</td>
+                </tr>
+                <tr>
+                    <td class="unsupported">-</td>
+                    <td>This capability is not supported by tested TPM</td>
+                </tr>
+                <tr>
+                    <td class="center">---</td>
+                    <td>Information not present on tested TPM</td>
+                </tr>
+                <tr>
+                    <td class="unknown center">?</td>
+                    <td>Could not be determined from test data</td>
+                </tr>
+                <tr>
+                    <td class="center no-data">No data</td>
+                    <td>Performance test was not preformed</td>
+                </tr>
+                <tr>
+                    <td class="red-cell"></td>
+                    <td>Tested system did not have a TPM</td>
+                </tr>
+                <tr>
+                    <td><span class="bold">0</span> / 0 (<span class="italic">0</span>)</td>
+                    <td>Ratio of supported capabilities: <span class="bold">supported</span> / total [with TPM present] (<span class="italic">all results</span> [incl. with no TPM present])</td>
+                </tr>
+            </table>
+            <div id="loader">
+                <div class="loader-box">
+                    <div class="spinner"></div>
+                    <h1>Data is loading...</h1>
+                </div>
+            </div>
+            <div id="list"></div>
+        </div>
+        <div class="table-canvas">
+            <div id="table-navigation"></div>
+            <table id="table"></table>
+        </div>
+    </div>
+</body>
+</html>
