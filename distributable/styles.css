@@ -44,11 +44,11 @@
 }
 .tpm-data .supported {
     text-align: center;
-    background-color:#BFE0C0
+    background-color:#BFE0C0 !important;
 }
 .tpm-data .unsupported {
     text-align: center;
-    background-color:#E0C0C0
+    background-color:#E0C0C0 !important;
 }
 .tpm-data .sticky-head-cell {
     position:sticky;
@@ -122,21 +122,21 @@
     animation: spin 1.0s infinite ease-in-out;
     -webkit-animation: spin 1.0s infinite ease-in-out;
 }
-.controls {
+.tpm-data .controls {
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
 }
-.controls button {
+.tpm-data .controls button {
     padding: 10px;
     border-radius: 5px;
     border-width: 1px;
     cursor: pointer;
 }
-.controls button:active {
+.tpm-data .controls button:active {
     background-color: lightgray;
 }
-.legend {
+.tpm-data .legend {
     width:100%;
     table-layout: fixed;
 }
@@ -176,6 +176,16 @@
 .tpm-data #table-navigation a {
     font-weight: bold;
     text-decoration: none;
+}
+.tpm-data .ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px
+}
+.tpm-data table tr:not(.non-hoverable):hover td {
+    background-color: #ffff99;
+    border-bottom: 1px solid black !important;
 }
 @-webkit-keyframes spin {
     0% {

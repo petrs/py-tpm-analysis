@@ -32,6 +32,7 @@ class Data(object):
         self.supported_commands = []
         self.supported_ecc = []
 
+    # helper function
     @staticmethod
     def get_property_value(line, value):
         additional_info = ''
@@ -48,31 +49,37 @@ class Data(object):
             additional_info += ')'
         return additional_info
 
+    # parses meta data from corresponding file
     @abc.abstractmethod
     def parse_meta(self):
         """Parses meta data"""
         return
 
+    # parses fixed properties from corresponding file
     @abc.abstractmethod
     def parse_properties_fixed(self):
         """Parses fixed properties"""
         return
 
+    # parses supported algorithms from corresponding file
     @abc.abstractmethod
     def parse_algorithms(self):
         """Parses algorithms"""
         return
 
+    # parses supported commands from corresponding file
     @abc.abstractmethod
     def parse_commands(self):
         """Parses commands"""
         return
 
+    # parses supported ecc curves from corresponding file
     @abc.abstractmethod
     def parse_ecc(self):
         """Parses ecc"""
         return
 
+    # parses performance metrics from corresponding file
     @abc.abstractmethod
     def parse_performance(self):
         """Parses performance"""

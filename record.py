@@ -5,6 +5,7 @@ from analytics.algtest import AlgtestCase
 from analytics.windows import WindowsCase
 
 
+# a record represents a folder of results either containing a single test scenario (1 dataset) or multiple
 class Record:
 
     record_count = 0
@@ -12,7 +13,8 @@ class Record:
     def __init__(self, path, index=0):
         # destination path
         self.path = path
-        self.original_name = os.path.basename(os.path.normpath(path))
+        self.original_name = os.path.basename(os.path.normpath(path))  # gets rewritten
+        self.folder_name = os.path.basename(os.path.normpath(path))
 
         # object meta data
         self.index = index
@@ -34,33 +36,11 @@ class Record:
         # Meta data
         Record.record_count += 1
 
-    def __repr__(self):
-        # todo development print
-
-        # if self.number_of_results > 1:
-        #     uh = []
-        #     for obj in self.partial_results:
-        #         uh.append(obj.detail + '\n')
-        #     return '\n\nMULTIPLE\n' + ''.join(uh) + '\n\n'
-        # else:
-        #     return self.original_name + self.detail + '\n'
-
-        # return self.original_name + self.detail + '\n'
-
-        string = str(self.index) + ';' + str(self.number_of_results) + ';' + self.original_name + '\n'
-        return string
-
-        if self.number_of_results > 1:
-            return 'not_yet \n'
-        else:
-            if self.data:
-                return str(self.data.firmware_version) + '\n'
-            else:
-                return 'TOTO BY TU NEMELO BYT\n'
-
+    # will return structured dataset data
     def get_col(self):
         return parse_data(self)
 
+    # processes test result metadata for both deep and shallow datasets (single / multi -result folders)
     def get_meta(self):
         if self.number_of_results > 1:
             for record in self.partial_results:
@@ -72,6 +52,7 @@ class Record:
                 self.data.parse_meta()
                 self.data.parse_properties_fixed()
 
+    # processes test results attributes for both deep and shallow datasets (single / multi -result folders)
     def get_results(self):
         if self.number_of_results > 1:
             for record in self.partial_results:
@@ -87,9 +68,11 @@ class Record:
                 self.data.parse_ecc()
                 self.data.parse_performance()
 
+    # might be extended to mine more data
     def get_performance(self):
         pass
 
+    # finds the correct variant of each test result (to be able to parse it correctly)
     def find_type(self):
         if os.path.isdir(self.path):
             self.is_folder = True
@@ -139,6 +122,7 @@ class Record:
     def set_flag(self, name, value):
         self.flags[name] = value
 
+    # definition of data per each dataset (1 test scenario)
     def get_data(self):
         return {
             'original_name': self.original_name,
@@ -156,10 +140,12 @@ class Record:
         }
 
 
+# structure data for a folder of results
 def parse_data(record):
     data = {
         'id': record.index,
         'name': record.original_name,
+        'original_name': record.folder_name,
         'dataset': []
     }
 
@@ -174,6 +160,7 @@ def parse_data(record):
     data['dataset'] = dataset
 
     return data
+
 
 def check_variants(record, path, directories, files):
     # variant 1: algtest folder with result, detail, performance folders within

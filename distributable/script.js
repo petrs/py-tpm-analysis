@@ -106,7 +106,7 @@ function toggle(name) {
 function generateTable(data) {
     let html = ''
 
-    html += getHeader('Basic info', data['data'], true);
+    html += getHeader('Basic information', data['data'], true, true);
 
     html += getRow('manufacturer', data['data'])
     html += getRow('firmware', data['data'])
@@ -230,15 +230,23 @@ function getPerformanceRow(command, test_case, data) {
     return string
 }
 
-function getHeader(name, columns, header = false) {
-    let string = '<tr class="gray" id=' + name.replace(' ', '_') + '><td class="sticky gray center header-cell" colspan=2>' + name + '</td>'
+function getHeader(name, columns, header = false, fileNames = false) {
+    let string = '<tr class="gray non-hoverable" id=' + name.replace(' ', '_') + '><td class="sticky gray center header-cell" colspan=2>' + name + '</td>'
 
     columns.forEach(column => {
         string += '<td class="center column-' + column['id'] + '" colspan="' + column['dataset'].length + '">' + column['id'] + '</td>'
     })
 
     string += '</tr>'
-    string += '<tr class="purple"><td class="sticky purple" colspan=2>Name</td>'
+
+    if(fileNames) {
+        string += '<tr class="gray non-hoverable"><td class="sticky gray center header-cell" colspan=2>Result folder name</td>'
+        columns.forEach(column => {
+            string += '<td class="center ellipsis column-' + column['id'] + '" colspan="' + column['dataset'].length + '">' + createTooltip(column['original_name'], {name: column['original_name']}) + '</td>'
+        })
+    }
+
+    string += '<tr class="purple non-hoverable"><td class="sticky purple" colspan=2>Name</td>'
 
     columns.forEach(column => {
         column['dataset'].forEach(dataset => {

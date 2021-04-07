@@ -26,12 +26,12 @@ def scan_directory(input_directory, check_for_unzips):
     class FolderExistsException(Exception):
         pass
 
-    records = []
+    rcrds = []
     # unzip
     index = 1
     for line in os.listdir(input_directory):
         file_path = input_directory + '/' + line
-        record = Record(file_path)
+        rcrd = Record(file_path)
 
         if not line.startswith("."):
             if zipfile.is_zipfile(file_path):
@@ -44,21 +44,21 @@ def scan_directory(input_directory, check_for_unzips):
                                 raise FolderExistsException
                             folder_index += 1
                         if folder_index > 0:
-                            record.set_flag(constatnts.RECORD_FLAG_NON_UNIQUE_FOLDER_NAME, True)
+                            rcrd.set_flag(constatnts.RECORD_FLAG_NON_UNIQUE_FOLDER_NAME, True)
                             folder_path += ('_' + str(folder_index))
 
                         zip_ref.extractall(folder_path)
-                        setattr(record, 'path', folder_path)
+                        setattr(rcrd, 'path', folder_path)
                     except (FolderExistsException, zipfile.BadZipfile) as ex:
                         continue
             else:
                 if line.endswith('.zip'):
                     continue
-                setattr(record, 'index', index)
+                setattr(rcrd, 'index', index)
                 index += 1
-            records.append(record)
+            rcrds.append(rcrd)
 
-    return records
+    return rcrds
 
 
 def sort_lists():
@@ -67,11 +67,11 @@ def sort_lists():
     Data.global_supported_ecc.sort(key=lambda h: int(h, 0))
 
 
-def sort_results(columns):
+def sort_results(cols):
     move_back = []
-    columns.sort(key=sort_by_vendor)
+    cols.sort(key=sort_by_vendor)
 
-    for index, result in enumerate(columns):
+    for index, result in enumerate(cols):
         for i, dataset in enumerate(result['dataset']):
             if 'no_tpm' in dataset and i == 0:
                 if dataset['no_tpm']:
@@ -79,9 +79,9 @@ def sort_results(columns):
                     break
 
     for x, index in enumerate(move_back):
-        columns.append(columns.pop(index - x))
+        cols.append(cols.pop(index - x))
 
-    for index, result in enumerate(columns):
+    for index, result in enumerate(cols):
         result['id'] = index
 
         name = ''
@@ -109,16 +109,16 @@ def sort_by_vendor(e):
     return [manufacturer, fw]
 
 
-def calculate_meta(columns):
+def calculate_meta(cols):
     meta = {
-        'total': len(columns),
+        'total': len(cols),
         'total_tpm': 0,
         'supported_algorithms': {},
         'supported_commands': {},
         'supported_ecc': {}
     }
 
-    for column in columns:
+    for column in cols:
         if not column['dataset'][0]['no_tpm']:
             meta['total_tpm'] += 1
 
@@ -142,14 +142,15 @@ def calculate_meta(columns):
 
     return meta
 
-def create_supporting_files(columns, output):
-    with open(os.path.join(output, 'data.json'), 'w') as support_file:
-        support_file.write(json.dumps(columns))
 
-    with open(os.path.join(output, 'meta.json'), 'w') as support_file:
-        support_file.write(json.dumps(calculate_meta(columns)))
+def create_supporting_files(cols, out):
+    with open(os.path.join(out, 'data.json'), 'w') as support_file:
+        support_file.write(json.dumps(cols))
 
-    lists = os.path.join(output, 'lists')
+    with open(os.path.join(out, 'meta.json'), 'w') as support_file:
+        support_file.write(json.dumps(calculate_meta(cols)))
+
+    lists = os.path.join(out, 'lists')
     os.makedirs(lists, exist_ok=True)
     with open(os.path.join(lists, 'supported_algorithms.json'), 'w') as support_file:
         support_file.write(json.dumps(Data.global_supported_algorithms))
@@ -166,7 +167,7 @@ def create_supporting_files(columns, output):
     with open(os.path.join(lists, 'performance_metrics.json'), 'w') as support_file:
         support_file.write(json.dumps(Data.global_performance))
 
-    dictionary = os.path.join(output, 'dictionary')
+    dictionary = os.path.join(out, 'dictionary')
     os.makedirs(dictionary, exist_ok=True)
 
     with open(os.path.join(dictionary, 'algorithms.json'), 'w') as support_file:
@@ -178,9 +179,9 @@ def create_supporting_files(columns, output):
     with open(os.path.join(dictionary, 'ecc.json'), 'w') as support_file:
         support_file.write(json.dumps(constatnts.supported_ecc))
 
-    copy('distributable/index.html', output)
-    copy('distributable/script.js', output)
-    copy('distributable/styles.css', output)
+    copy('distributable/index.html', out)
+    copy('distributable/script.js', out)
+    copy('distributable/styles.css', out)
 
 
 if __name__ == "__main__":

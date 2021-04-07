@@ -2,6 +2,7 @@ from .data import Data
 import os
 import constatnts
 
+
 class WindowsCase(Data):
     def parse_properties_fixed(self):
         if os.path.isfile(self.detail):

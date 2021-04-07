@@ -2,6 +2,7 @@ from .data import Data
 import os
 import glob
 
+
 class AlgtestCase(Data):
     def parse_performance(self):
         perf_csvs = glob.glob(os.path.join(self.detail, 'Perf_*.csv'))
