@@ -31,6 +31,9 @@
 .tpm-data .failed {
     color: red
 }
+.tpm-data .red {
+    color: red
+}
 .tpm-data .metric-cell {
     text-align: right;
     font-weight:bold

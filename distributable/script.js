@@ -9,6 +9,7 @@ let files = [
     'lists/supported_ecc.json',
     'data.json',
     'meta.json',
+    'revision.json',
 ];
 
 let promises = []
@@ -118,19 +119,22 @@ function generateTable(data) {
     })
 
     html += getHeader('Supported algorithms', data['data']);
-    data['supported_algorithms'].forEach(algorithm => {
+
+    for (let algorithm in data['algorithms']) {
         html += getSupportedRow(algorithm, 'supported_algorithms', data)
-    })
+    }
 
     html += getHeader('Supported commands', data['data']);
-    data['supported_commands'].forEach(command => {
+
+    for (let command in data['commands']) {
         html += getSupportedRow(command, 'supported_commands', data)
-    })
+    }
 
     html += getHeader('Supported ECC', data['data']);
-    data['supported_ecc'].forEach(ecc => {
+
+    for (let ecc in data['ecc']) {
         html += getSupportedRow(ecc, 'supported_ecc', data)
-    })
+    }
 
     for (let metric in data['performance_metrics']) {
         if (data['performance_metrics'].hasOwnProperty(metric)) {
@@ -148,6 +152,7 @@ function generateTable(data) {
 
 function getRow(name, columns) {
     let string = '<tr class="data-row"><td colspan=2 class="sticky">' + capitalize(name) + '</td>'
+    string += '<td class="center revision">-</td>'
     columns.forEach(column => {
         column['dataset'].forEach(dataset => {
             string += '<td class="column-' + column['id'] + ' center ' + (dataset['no_tpm'] ? 'red-cell' : '') + '">' + createTooltip(dataset[name], column) + '</td>'
@@ -162,7 +167,7 @@ function createTooltip(print, column) {
 }
 
 function getStatistics(data, set, name) {
-    return '<span class="statistics"><span class="bold">' + data['meta'][set][name] + '</span> / ' + data['meta']['total_tpm'] + ' <span class="italic">(' + data['meta']['total'] + ')</span>' + '</span>'
+    return '<span class="statistics"><span class="bold' + ((data['meta'][set][name] || 0) === 0 ? ' red' : '') + '">' + (data['meta'][set][name] || 0) + '</span> / ' + data['meta']['total_tpm'] + ' <span class="italic">(' + data['meta']['total'] + ')</span>' + '</span>'
 }
 
 function getSupportedRow(name, set, data, value = false, stats = true) {
@@ -171,6 +176,23 @@ function getSupportedRow(name, set, data, value = false, stats = true) {
     if (stats) {
         string += '<td class="sticky sticky-metric center">' + getStatistics(data, set, name) + '</td>'
     }
+
+    string += '<td class="center revision">'
+    switch (set) {
+        case 'supported_algorithms':
+            string += data['revision']['algorithms'][name]
+            break
+        case 'supported_commands':
+            string += data['revision']['commands'][name]
+            break
+        case 'supported_ecc':
+            string += data['revision']['ecc'][name]
+            break
+        default:
+            string += '-'
+    }
+    string += '</td>'
+
     data['data'].forEach(column => {
         column['dataset'].forEach(dataset => {
             if(value) {
@@ -210,6 +232,8 @@ function getPerformanceRow(command, test_case, data) {
 
         string += '<td class="metric-cell sticky sticky-metric">' + row + '</td>'
 
+        string += '<td class="center revision">-</td>'
+
         data['data'].forEach(column => {
             column['dataset'].forEach(dataset => {
                 try {
@@ -233,6 +257,8 @@ function getPerformanceRow(command, test_case, data) {
 function getHeader(name, columns, header = false, fileNames = false) {
     let string = '<tr class="gray non-hoverable" id=' + name.replace(' ', '_') + '><td class="sticky gray center header-cell" colspan=2>' + name + '</td>'
 
+    string += '<td class="center revision">-</td>'
+
     columns.forEach(column => {
         string += '<td class="center column-' + column['id'] + '" colspan="' + column['dataset'].length + '">' + column['id'] + '</td>'
     })
@@ -241,12 +267,16 @@ function getHeader(name, columns, header = false, fileNames = false) {
 
     if(fileNames) {
         string += '<tr class="gray non-hoverable"><td class="sticky gray center header-cell" colspan=2>Result folder name</td>'
+        string += '<td class="center revision">-</td>'
         columns.forEach(column => {
             string += '<td class="center ellipsis column-' + column['id'] + '" colspan="' + column['dataset'].length + '">' + createTooltip(column['original_name'], {name: column['original_name']}) + '</td>'
         })
+        string += '</tr>'
     }
 
     string += '<tr class="purple non-hoverable"><td class="sticky purple" colspan=2>Name</td>'
+
+    string += '<td class="center revision">Introduced</td>'
 
     columns.forEach(column => {
         column['dataset'].forEach(dataset => {
