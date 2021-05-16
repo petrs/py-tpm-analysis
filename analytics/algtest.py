@@ -2,6 +2,9 @@ from .data import Data
 import os
 import glob
 
+# This parser is an extended and modified version of the original
+# parser found in https://github.com/crocs-muni/tpm2-algtest
+# made by Šimon Struk
 
 class AlgtestCase(Data):
     def parse_performance(self):
@@ -262,12 +265,14 @@ def compute_stats(infile, *, rsa2048=False):
             continue
         t = float(t)
         sum_op += t
-        if t > max_op: max_op = t
-        if t < min_op: min_op = t
+        if t > max_op:
+            max_op = t
+        if t < min_op:
+            min_op = t
     total = success + fail
     if success != 0:
         avg_op = (sum_op / success)
     else:
         min_op = 0
 
-    return avg_op * 1000, min_op * 1000, max_op * 1000, total, success, fail, error  # sec -> ms
+    return avg_op * 1000, min_op * 1000, max_op * 1000, total, success, fail, error
